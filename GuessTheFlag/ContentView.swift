@@ -47,6 +47,10 @@ struct ContentView: View {
                     }
                 }
                 
+                Text("Correct answers: \(self.correctAnswersCount)")
+                    .foregroundColor(.white)
+                    .font(.subheadline)
+                
                 Spacer()
             }
             .alert(isPresented: $showingScoreAlert){
@@ -63,7 +67,7 @@ struct ContentView: View {
             correctAnswersCount += 1
         }
         else{
-            scoreAlertTitle = "Wrong"
+            scoreAlertTitle = "Wrong! That’s the flag of \(countries[number])"
         }
         
         showingScoreAlert = true
