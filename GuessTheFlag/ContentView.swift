@@ -9,6 +9,8 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var correctAnswersCount = 0
+    
     @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"]
         .shuffled()
     @State private var correctAnswer = Int.random(in: 0...2)
@@ -48,7 +50,7 @@ struct ContentView: View {
                 Spacer()
             }
             .alert(isPresented: $showingScoreAlert){
-                Alert(title: Text(scoreAlertTitle), message: Text("Your score is ???"), dismissButton: .default(Text("Continue")){
+                Alert(title: Text(scoreAlertTitle), message: Text("Your score is \(self.correctAnswersCount)"), dismissButton: .default(Text("Continue")){
                         self.askQuestion()
                     })
             }
@@ -58,6 +60,7 @@ struct ContentView: View {
     private func flagTapped(_ number: Int){
         if number == correctAnswer{
             scoreAlertTitle = "Correct"
+            correctAnswersCount += 1
         }
         else{
             scoreAlertTitle = "Wrong"
