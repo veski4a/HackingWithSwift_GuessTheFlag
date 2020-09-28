@@ -31,6 +31,11 @@ struct ContentView: View {
     @State private var showingScoreAlert = false
     @State private var scoreAlertTitle = ""
     
+    @State private var clickedButtonNumber: Int? = nil
+    @State private var rotationAmountForCorrectFlag = 0.0
+    @State private var opacityAmountForIncorrectFlags = 1.0
+    @State private var offsetAmount: CGFloat = CGFloat.zero
+    
     var body: some View {
         ZStack{
             LinearGradient(gradient: Gradient(colors: [.blue, .black]), startPoint: .top, endPoint: .bottom)
@@ -53,6 +58,10 @@ struct ContentView: View {
                     }){
                         FlagImage(name: self.countries[number])
                     }
+                    .rotation3DEffect(clickedButtonNumber == number && number == correctAnswer ? .degrees(rotationAmountForCorrectFlag) : .zero,
+                        axis: (x: 0.0, y: 0.0, z: 1.0))
+                    .opacity(clickedButtonNumber != number && number != correctAnswer ? opacityAmountForIncorrectFlags : 1.0)
+                    .offset(x: clickedButtonNumber == number && number != correctAnswer ? offsetAmount : 0.0)
                 }
                 
                 Text("Correct answers: \(self.correctAnswersCount)")
@@ -70,12 +79,25 @@ struct ContentView: View {
     }
     
     private func flagTapped(_ number: Int){
+        clickedButtonNumber = number
+        
         if number == correctAnswer{
             scoreAlertTitle = "Correct"
             correctAnswersCount += 1
+            
+            withAnimation{
+                rotationAmountForCorrectFlag += 360
+                opacityAmountForIncorrectFlags = 0.25
+            }
         }
         else{
             scoreAlertTitle = "Wrong! That’s the flag of \(countries[number])"
+            
+            offsetAmount = 10.0
+            
+            withAnimation(Animation.interpolatingSpring(stiffness: 200, damping: 10, initialVelocity: 200).repeatCount(1, autoreverses: true)){
+                offsetAmount = CGFloat.zero
+            }
         }
         
         showingScoreAlert = true
@@ -84,6 +106,10 @@ struct ContentView: View {
     private func askQuestion(){
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
+        
+        clickedButtonNumber = nil
+        opacityAmountForIncorrectFlags = 1.0
+        offsetAmount = CGFloat.zero
     }
 }
 
